@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CineBook Admin Panel</title>
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; background: #f4f4f4; }
+
+    .sidebar {
+      width: 250px;
+      background: #111;
+      color: #fff;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 20px;
+    }
+
+    .sidebar h2 { margin-top: 0; }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar li {
+      margin: 15px 0;
+      cursor: pointer;
+      color: #ccc;
+    }
+    .sidebar li:hover {
+      color: #fff;
+    }
+
+    .main {
+      margin-left: 270px;
+      padding: 20px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-top: 0;
+      border-bottom: 2px solid #111;
+      padding-bottom: 5px;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    form input, form select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    form button {
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <ul>
+      <li onclick="scrollToSection('nowForm')">➕ Add Now Showing</li>
+      <li onclick="scrollToSection('upcomingForm')">📅 Add Upcoming</li>
+      <li onclick="scrollToSection('locationForm')">📍 Add Location</li>
+      <li onclick="scrollToSection('theaterForm')">🏢 Add Theater</li>
+      <li onclick="scrollToSection('timeForm')">🕒 Add Show Time</li>
+    </ul>
+  </div>
+
+  <div class="main">
+
+    <!-- NOW SHOWING -->
+    <section id="nowForm">
+      <h2>🎬 Add Now Showing Movie</h2>
+      <form onsubmit="addMovie(event, 'now')">
+        <input type="text" id="nowTitle" placeholder="Movie Title" required>
+        <input type="text" id="nowGenre" placeholder="Genre" required>
+        <input type="text" id="nowDuration" placeholder="Duration (e.g. 2h 15m)" required>
+        <input type="text" id="nowPoster" placeholder="Poster URL" required>
+        <input type="text" id="nowPlace" placeholder="Location (e.g. Kochi)" required>
+        <button type="submit">Add Now Showing Movie</button>
+      </form>
+    </section>
+
+    <!-- UPCOMING -->
+    <section id="upcomingForm">
+      <h2>📅 Add Upcoming Movie</h2>
+      <form onsubmit="addMovie(event, 'upcoming')">
+        <input type="text" id="upTitle" placeholder="Movie Title" required>
+        <input type="text" id="upGenre" placeholder="Genre" required>
+        <input type="text" id="upDuration" placeholder="Duration" required>
+        <input type="text" id="upPoster" placeholder="Poster URL" required>
+        <input type="text" id="upPlace" placeholder="Location" required>
+        <button type="submit">Add Upcoming Movie</button>
+      </form>
+    </section>
+
+    <!-- LOCATION -->
+    <section id="locationForm">
+      <h2>📍 Add Location</h2>
+      <form onsubmit="saveList(event, 'locations', 'locationInput')">
+        <input type="text" id="locationInput" placeholder="Enter City/Location" required>
+        <button type="submit">Save Location</button>
+      </form>
+    </section>
+
+    <!-- THEATER -->
+    <section id="theaterForm">
+      <h2>🏢 Add Theater</h2>
+      <form onsubmit="saveList(event, 'theaters', 'theaterInput')">
+        <input type="text" id="theaterInput" placeholder="Theater Name" required>
+        <button type="submit">Add Theater</button>
+      </form>
+    </section>
+
+    <!-- SHOW TIME -->
+    <section id="timeForm">
+      <h2>🕒 Add Show Time</h2>
+      <form onsubmit="saveList(event, 'showtimes', 'timeInput')">
+        <input type="text" id="timeInput" placeholder="Show Time (e.g. 10:00 AM)" required>
+        <button type="submit">Add Show Time</button>
+      </form>
+    </section>
+
+  </div>
+
+  <script>
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+    }
+
+    function addMovie(event, type) {
+      event.preventDefault();
+      const title = document.getElementById(type === 'now' ? 'nowTitle' : 'upTitle').value;
+      const genre = document.getElementById(type === 'now' ? 'nowGenre' : 'upGenre').value;
+      const duration = document.getElementById(type === 'now' ? 'nowDuration' : 'upDuration').value;
+      const poster = document.getElementById(type === 'now' ? 'nowPoster' : 'upPoster').value;
+      const place = document.getElementById(type === 'now' ? 'nowPlace' : 'upPlace').value;
+
+      const movie = { title, genre, duration, poster, place, type };
+      const oldData = JSON.parse(localStorage.getItem('movies')) || [];
+      oldData.push(movie);
+      localStorage.setItem('movies', JSON.stringify(oldData));
+      alert("Movie added successfully!");
+      event.target.reset();
+    }
+
+    function saveList(event, key, inputId) {
+      event.preventDefault();
+      const val = document.getElementById(inputId).value;
+      const existing = JSON.parse(localStorage.getItem(key)) || [];
+      existing.push(val);
+      localStorage.setItem(key, JSON.stringify(existing));
+      alert(`${key.charAt(0).toUpperCase() + key.slice(1)} updated!`);
+      event.target.reset();
+    }
+  </script>
+
+</body>
+</html>
